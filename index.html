@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sierra Scaling — Global Brand Scaling Agency</title>
+
+  <!-- Switzer font (matches reference site) -->
+  <link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── Design tokens ── */
+    :root {
+      --cream:       #F6F5F2;
+      --cream-dark:  #EEECE8;
+      --ink:         #1A1816;
+      --ink-mid:     #3A3734;
+      --ink-light:   #787470;
+      --forest:      #1C3A28;
+      --blue:        #0041F0;
+      --white:       #FFFFFF;
+
+      --page-pad: clamp(1.25rem, 4vw, 2.5rem);
+      --gap: 2em;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    ::-webkit-scrollbar { display: none; }
+
+    body {
+      font-family: 'Switzer', Arial, sans-serif;
+      font-size: clamp(14px, 1.1vw, 17px);
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.4;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overscroll-behavior: none;
+    }
+
+    ::selection { background: var(--ink); color: var(--cream); }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    /* ── Layout ── */
+    .wrap {
+      max-width: 1440px; margin: 0 auto;
+      padding-left: var(--page-pad);
+      padding-right: var(--page-pad);
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.45em;
+      font-family: 'Switzer', sans-serif;
+      font-weight: 500; font-size: 0.875rem;
+      letter-spacing: -0.01em;
+      border-radius: 100px;
+      cursor: pointer; white-space: nowrap;
+      transition: opacity 0.2s ease, transform 0.2s cubic-bezier(.4,0,.2,1),
+                  background 0.2s ease, color 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-dark {
+      background: var(--ink); color: var(--cream);
+      padding: 0.65em 1.35em;
+      border: 1px solid var(--ink);
+    }
+    .btn-dark:hover { opacity: 0.82; }
+
+    .btn-outline {
+      background: transparent; color: var(--ink);
+      padding: 0.65em 1.35em;
+      border: 1px solid rgba(26,24,22,0.3);
+    }
+    .btn-outline:hover {
+      background: var(--ink); color: var(--cream);
+      border-color: var(--ink);
+    }
+
+    .btn-cream {
+      background: var(--cream); color: var(--ink);
+      padding: 0.65em 1.35em;
+      border: 1px solid var(--cream);
+    }
+    .btn-cream:hover { opacity: 0.85; }
+
+    .btn-blue {
+      background: var(--blue); color: #fff;
+      padding: 0.65em 1.35em;
+      border: 1px solid var(--blue);
+    }
+    .btn-blue:hover { opacity: 0.85; }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.1em var(--page-pad);
+      background: rgba(246,245,242,0.9);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(26,24,22,0.07);
+    }
+    .nav-inner {
+      max-width: 1440px; margin: 0 auto;
+      display: flex; align-items: center;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 0.5rem;
+      flex-shrink: 0; margin-right: 2.5rem;
+    }
+    .nav-logo-text {
+      font-weight: 600; font-size: 0.9375rem;
+      letter-spacing: -0.03em; color: var(--ink);
+    }
+    .nav-links {
+      display: flex; align-items: center; gap: 1.75rem;
+    }
+    .nav-link {
+      font-size: 0.875rem; font-weight: 500;
+      color: var(--ink-mid);
+      transition: color 0.18s ease;
+    }
+    .nav-link:hover { color: var(--ink); }
+    .nav-cta { margin-left: auto; }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding-top: 5.5rem;
+      min-height: 100vh;
+      display: flex; align-items: center;
+      background: var(--cream);
+      position: relative; overflow: hidden;
+    }
+
+    /* Waveform canvas */
+    #waveform-canvas {
+      position: absolute;
+      inset: 0; width: 100%; height: 100%;
+      z-index: 0;
+      display: block;
+    }
+    /* Soft vignette so edges don't distract from text */
+    .hero-canvas-overlay {
+      position: absolute; inset: 0; z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(ellipse 80% 70% at 50% 50%,
+        transparent 30%,
+        rgba(246,245,242,0.45) 100%);
+    }
+
+    .hero-inner {
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+      width: 100%;
+      padding: 2.5em 0 4em;
+      position: relative; z-index: 2;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--ink-light); margin-bottom: 1.25em;
+    }
+    .hero-h1 {
+      font-size: clamp(2.75rem, 6.5vw, 6.25rem);
+      font-weight: 500;
+      line-height: 1.0;
+      letter-spacing: -0.04em;
+      color: var(--ink); margin-bottom: 1.125em;
+    }
+    /* Animated word cycle replacing <em>ambitious</em> */
+    .word-cycle {
+      display: inline-block; position: relative;
+      /* clip-path clips top/bottom for the slide animation without touching baseline.
+         Right side extends far so longer words (e.g. "unstoppable") are never clipped. */
+      clip-path: inset(0 -10em 0 0);
+      vertical-align: baseline;
+    }
+    .word-cycle::after {
+      content: "ambitious"; /* sizes container to the default word — shorter words sit flush after "for" */
+      font-style: italic; color: #4A6389;
+      visibility: hidden; display: inline-block;
+      padding-right: 0.08em;
+    }
+    .word-item {
+      position: absolute; top: 0; left: 0;
+      white-space: nowrap; font-style: italic; color: #4A6389;
+      opacity: 0;
+      transform: translateY(110%);
+      transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .word-item.wc-active {
+      opacity: 1; transform: translateY(0);
+    }
+    .word-item.wc-exit {
+      opacity: 0; transform: translateY(-110%);
+      transition: opacity 0.38s ease, transform 0.38s ease;
+    }
+    .hero-sub {
+      font-size: 1.0625rem; font-weight: 400;
+      color: var(--ink-light); line-height: 1.6;
+      max-width: 480px; margin: 0 auto 2em;
+      text-align: center;
+    }
+    .hero-btns { display: flex; gap: 0.75em; flex-wrap: wrap; justify-content: center; }
+
+    /* Orbit rings — hidden now that layout is centred */
+    .hero-visual { display: none; }
+    .orbit-wrap { }
+    .orbit-ring { }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .orbit-dot { }
+    .orbit-center { }
+
+    /* ── Divider line ── */
+    .divider { border: none; border-top: 1px solid rgba(26,24,22,0.1); }
+
+    /* ── Pain section ── */
+    .pain { padding: 5em 0; background: #E4E3E0; }
+    .pain-h2 {
+      font-size: clamp(1.9rem, 3.8vw, 3.8rem);
+      font-weight: 500; line-height: 1.05;
+      letter-spacing: -0.035em; max-width: 700px;
+      margin-bottom: 2.5em;
+    }
+    .pain-h2 .muted { color: var(--ink-light); }
+    .pain-cols {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap);
+    }
+    @media (max-width: 720px) { .pain-cols { grid-template-columns: 1fr; } }
+    .pain-col { }
+    .pain-col.featured {
+      background: #4A6389; color: #fff;
+      border-radius: 14px; padding: 1.875em;
+    }
+    .pain-col:not(.featured) { padding-top: 0.5em; }
+    .pain-label {
+      font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--ink-light); margin-bottom: 1em;
+    }
+    .pain-col.featured .pain-label { color: rgba(255,255,255,0.55); }
+    .pain-title {
+      font-size: 1.0625rem; font-weight: 500;
+      letter-spacing: -0.02em; margin-bottom: 0.625em;
+    }
+    .pain-body { font-size: 0.9375rem; color: var(--ink-light); line-height: 1.65; }
+    .pain-col.featured .pain-body { color: rgba(255,255,255,0.75); }
+
+    /* ── Social proof ── */
+    .proof { padding: 5em 0; background: var(--cream); }
+    .proof-top {
+      display: flex; align-items: flex-end;
+      justify-content: space-between; gap: 2rem;
+      margin-bottom: 2.75em; flex-wrap: wrap;
+    }
+    .proof-h2 {
+      font-size: clamp(1.75rem, 3.4vw, 3.2rem);
+      font-weight: 500; line-height: 1.05;
+      letter-spacing: -0.035em; max-width: 500px;
+    }
+    .proof-h2 em { font-style: italic; color: var(--ink-light); }
+    .founders-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 1em;
+    }
+    @media (max-width: 720px) { .founders-grid { grid-template-columns: repeat(2, 1fr); } }
+    .founder-card {
+      border-radius: 10px; overflow: hidden;
+      border: 1px solid rgba(26,24,22,0.07);
+      background: var(--white);
+    }
+    .founder-photo {
+      width: 100%; aspect-ratio: 3/4;
+      overflow: hidden; background: var(--cream-dark);
+    }
+    .founder-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center top;
+      filter: grayscale(8%);
+    }
+    .founder-info {
+      padding: 0.75em 0.875em;
+      border-top: 1px solid rgba(26,24,22,0.06);
+    }
+    .founder-name {
+      font-size: 0.875rem; font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+    .founder-role { font-size: 0.72rem; color: var(--ink-light); margin-top: 2px; }
+
+    /* ── Dark orbit ── */
+    .dark-orbit {
+      background: var(--ink); color: var(--cream);
+      padding: 6.5em 0; position: relative; overflow: hidden;
+    }
+    .dark-orbit-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; align-items: center;
+    }
+    @media (max-width: 860px) {
+      .dark-orbit-grid { grid-template-columns: 1fr; }
+      .dark-visual-col { order: -1; }
+    }
+    .dark-eyebrow {
+      font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      color: rgba(246,245,242,0.4); margin-bottom: 1em;
+    }
+    .dark-h2 {
+      font-size: clamp(2rem, 4.2vw, 4.2rem);
+      font-weight: 500; line-height: 0.97;
+      letter-spacing: -0.04em; margin-bottom: 1em;
+    }
+    .dark-h2 em { font-style: italic; color: rgba(246,245,242,0.38); }
+    .dark-body {
+      font-size: 1rem; font-weight: 400;
+      color: rgba(246,245,242,0.55); line-height: 1.68;
+      max-width: 400px; margin-bottom: 2em;
+    }
+    /* Dark rings graphic */
+    .dark-visual-col {
+      display: flex; align-items: center; justify-content: center;
+    }
+    .rings-wrap {
+      width: min(400px, 85%); aspect-ratio: 1; position: relative;
+    }
+    @keyframes orbit-cw  { to { transform: rotate(360deg); } }
+    @keyframes orbit-ccw { to { transform: rotate(-360deg); } }
+    .d-ring {
+      position: absolute; border-radius: 50%;
+      border: 1px solid rgba(246,245,242,0.12);
+      animation: orbit-cw linear infinite;
+    }
+    .d-ring:nth-child(1) { inset: 0;   animation-duration: 34s; }
+    .d-ring:nth-child(2) { inset: 12%; animation-duration: 26s; animation-name: orbit-ccw; }
+    .d-ring:nth-child(3) { inset: 25%; animation-duration: 19s; }
+    .d-ring:nth-child(4) { inset: 38%; animation-duration: 13s; animation-name: orbit-ccw; }
+    .d-ring:nth-child(5) { inset: 52%; animation-duration: 8s; }
+    /* Orbiting dot on each ring */
+    .d-ring::after {
+      content: ''; position: absolute;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--cream);
+      top: -3.5px; left: 50%; transform: translateX(-50%);
+    }
+    .d-ring:nth-child(1)::after { background: rgba(246,245,242,0.9); }
+    .d-ring:nth-child(2)::after { background: rgba(74,99,137,0.85); width: 6px; height: 6px; top: -3px; }
+    .d-ring:nth-child(3)::after { background: rgba(246,245,242,0.5); width: 5px; height: 5px; top: -2.5px; }
+    .d-ring:nth-child(4)::after { background: rgba(74,99,137,0.6); width: 5px; height: 5px; top: -2.5px; }
+    .d-ring:nth-child(5)::after { background: rgba(246,245,242,0.4); width: 4px; height: 4px; top: -2px; }
+    .d-center {
+      position: absolute; inset: 40%;
+      border-radius: 50%; background: var(--cream);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .d-center svg { width: 38%; height: 38%; }
+
+    /* ── Services dark ── */
+    .services-dark {
+      background: #252320; color: var(--cream);
+      padding: 5em 0;
+      position: relative; overflow: hidden;
+    }
+    #shader-canvas {
+      position: absolute; top: 0; left: 0;
+      display: block;
+      z-index: 0; opacity: 0.55;
+      pointer-events: none;
+    }
+    .services-dark .wrap { position: relative; z-index: 1; }
+    .svc-dark-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; align-items: start;
+    }
+    @media (max-width: 860px) { .svc-dark-grid { grid-template-columns: 1fr; } }
+    .svc-dark-h2 {
+      font-size: clamp(1.875rem, 3.5vw, 3.4rem);
+      font-weight: 500; line-height: 1.04;
+      letter-spacing: -0.04em; margin-bottom: 0.75em;
+    }
+    .svc-dark-h2 em { font-style: italic; color: rgba(246,245,242,0.35); }
+    .svc-dark-body {
+      font-size: 1rem; color: rgba(246,245,242,0.5);
+      line-height: 1.68; max-width: 380px; margin-bottom: 2em;
+    }
+    .svc-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem;
+      margin-top: 2.5em;
+    }
+    .svc-stat-n {
+      font-size: clamp(2.25rem, 3.5vw, 3.2rem);
+      font-weight: 500; letter-spacing: -0.04em;
+      line-height: 1; margin-bottom: 0.2em;
+    }
+    .svc-stat-l {
+      font-size: 0.875rem; color: rgba(246,245,242,0.45); line-height: 1.4;
+    }
+    .svc-list { display: flex; flex-direction: column; gap: 1.25em; }
+    .svc-row {
+      padding: 1.5em;
+      border: 1px solid rgba(246,245,242,0.09);
+      border-radius: 12px;
+      transition: background 0.2s ease, border-color 0.2s ease;
+      cursor: default;
+    }
+    .svc-row:hover {
+      background: rgba(246,245,242,0.04);
+      border-color: rgba(246,245,242,0.18);
+    }
+    .svc-row-tag {
+      font-size: 0.7rem; font-weight: 500;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      color: rgba(246,245,242,0.3); margin-bottom: 0.4em;
+    }
+    .svc-row-title {
+      font-size: 1rem; font-weight: 500;
+      letter-spacing: -0.02em; margin-bottom: 0.35em;
+    }
+    .svc-row-body {
+      font-size: 0.875rem;
+      color: rgba(246,245,242,0.45); line-height: 1.6;
+    }
+
+    /* ── Process columns ── */
+    .process-sec {
+      padding: 5em 0; background: #3A3835;
+    }
+    .process-head { margin-bottom: 3em; }
+    .process-head-h2 {
+      font-size: clamp(1.5rem, 2.5vw, 2.4rem);
+      font-weight: 500; letter-spacing: -0.03em; line-height: 1.1;
+      max-width: 500px; color: var(--cream);
+    }
+    .process-cols {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;
+    }
+    @media (max-width: 860px) { .process-cols { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .process-cols { grid-template-columns: 1fr; } }
+    .proc-col {
+      padding-top: 1.25em;
+      border-top: 1px solid rgba(246,245,242,0.1);
+    }
+    .proc-num {
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.04em; color: rgba(246,245,242,0.4); margin-bottom: 1.125em;
+    }
+    .proc-title {
+      font-size: 1rem; font-weight: 500;
+      letter-spacing: -0.02em; margin-bottom: 0.5em; color: var(--cream);
+    }
+    .proc-body { font-size: 0.875rem; color: rgba(246,245,242,0.5); line-height: 1.68; }
+
+    /* ── Cards ── */
+    .cards-sec {
+      padding: 6em 0; background: #5A5855;
+    }
+    .cards-head { margin-bottom: 3em; }
+    .cards-eyebrow {
+      font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase; color: rgba(246,245,242,0.35);
+      margin-bottom: 0.85em;
+    }
+    .cards-h2 {
+      font-size: clamp(1.75rem, 3vw, 2.875rem);
+      font-weight: 500; letter-spacing: -0.04em; line-height: 1.06;
+      color: var(--cream);
+    }
+    .cards-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+      background: rgba(246,245,242,0.12);
+      border-radius: 16px; overflow: hidden;
+    }
+    @media (max-width: 860px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 520px) { .cards-grid { grid-template-columns: 1fr; } }
+    .card {
+      background: #5A5855;
+      padding: 2em 1.75em;
+      border: none;
+      transition: background 0.2s ease;
+    }
+    .card:hover { background: #6A6865; }
+    .card-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: rgba(74,99,137,0.18);
+      border: 1px solid rgba(74,99,137,0.3);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.25em;
+    }
+    .card-icon svg { stroke: rgba(74,99,137,0.9); }
+    .card-title {
+      font-size: 1rem; font-weight: 500; letter-spacing: -0.02em;
+      margin-bottom: 0.5em; color: var(--cream);
+    }
+    .card-body { font-size: 0.875rem; color: rgba(246,245,242,0.45); line-height: 1.68; }
+
+    /* ── CTA band ── */
+    .cta-band {
+      padding: 5em 0; background: #E8E6E3;
+    }
+    .cta-band-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem; align-items: start;
+    }
+    @media (max-width: 820px) {
+      .cta-band-row { grid-template-columns: 1fr; gap: 2.5rem; }
+    }
+    .cta-h2 {
+      font-size: clamp(1.5rem, 3vw, 2.875rem);
+      font-weight: 500; letter-spacing: -0.04em; line-height: 1.06;
+    }
+    .cta-h2 em { font-style: italic; color: var(--ink-light); }
+    .cta-sub {
+      font-size: 0.9375rem; color: var(--ink-light);
+      line-height: 1.65; margin-top: 0.875em;
+    }
+    /* Contact form */
+    .cta-form { display: flex; flex-direction: column; gap: 0.875rem; }
+    .cta-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; }
+    @media (max-width: 520px) { .cta-form-row { grid-template-columns: 1fr; } }
+    .cta-label {
+      display: block; font-size: 0.7rem; font-weight: 500;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--ink-light); margin-bottom: 0.3em;
+    }
+    .cta-input, .cta-textarea {
+      width: 100%;
+      font-family: 'Switzer', sans-serif; font-size: 0.9rem;
+      background: var(--white);
+      border: 1px solid rgba(26,24,22,0.2);
+      border-radius: 8px;
+      padding: 0.7em 0.9em;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.18s ease;
+      resize: none;
+    }
+    .cta-input::placeholder, .cta-textarea::placeholder { color: rgba(26,24,22,0.3); }
+    .cta-input:focus, .cta-textarea:focus { border-color: #4A6389; }
+    .cta-form-note {
+      font-size: 0.75rem; color: var(--ink-light);
+      opacity: 0.6; margin-top: 0.25em;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--ink); color: var(--cream);
+      padding: 4em 0 2.5em; position: relative; overflow: hidden;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr;
+      gap: 3rem; margin-bottom: 3.5em; position: relative; z-index: 2;
+    }
+    @media (max-width: 820px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+    }
+    @media (max-width: 460px) { .footer-grid { grid-template-columns: 1fr; } }
+    .f-logo {
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-bottom: 0.875em;
+    }
+    .f-logo-text {
+      font-weight: 600; font-size: 0.9375rem; letter-spacing: -0.03em;
+    }
+    .f-tagline {
+      font-size: 0.875rem; color: rgba(246,245,242,0.42);
+      line-height: 1.65; max-width: 230px; margin-bottom: 1.25em;
+    }
+    .f-col-h {
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(246,245,242,0.35); margin-bottom: 1.125em;
+    }
+    .f-links { display: flex; flex-direction: column; gap: 0.55em; }
+    .f-link {
+      font-size: 0.875rem; color: rgba(246,245,242,0.6);
+      transition: color 0.18s ease;
+    }
+    .f-link:hover { color: var(--cream); }
+    .footer-bottom {
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+      padding-top: 1.375em;
+      border-top: 1px solid rgba(246,245,242,0.08);
+      position: relative; z-index: 2;
+    }
+    .f-copy { font-size: 0.8rem; color: rgba(246,245,242,0.3); }
+    .f-legal { display: flex; gap: 1.5em; }
+    .f-legal a {
+      font-size: 0.8rem; color: rgba(246,245,242,0.3);
+      transition: color 0.18s ease;
+    }
+    .f-legal a:hover { color: rgba(246,245,242,0.65); }
+
+    /* Footer gradient blob — matches reference */
+    .f-blob {
+      position: absolute;
+      bottom: -15%; right: -8%;
+      width: 520px; height: 520px;
+      background: radial-gradient(ellipse at center,
+        rgba(0,65,240,0.55) 0%,
+        rgba(42,69,48,0.45) 40%,
+        transparent 70%);
+      border-radius: 50%;
+      filter: blur(72px);
+      pointer-events: none;
+    }
+
+    /* ── Hero scroll animation ── */
+    /* ── Reveal ── */
+    .reveal {
+      opacity: 0; transform: translateY(18px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.in { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ NAVIGATION ═══ -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <img src="Brand_Assets/Linework.png" alt="Sierra Scaling" style="height:36px; width:auto; display:block;">
+        <span class="nav-logo-text">Sierra Scaling</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#services" class="nav-link">Services</a>
+        <a href="#process"  class="nav-link">Process</a>
+        <a href="#results"  class="nav-link">Results</a>
+        <a href="#contact"  class="nav-link">Contact</a>
+      </nav>
+
+      <div class="nav-cta">
+        <a href="#contact" class="btn btn-dark">Book a call</a>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero" id="hero">
+    <canvas id="waveform-canvas"></canvas>
+    <div class="hero-canvas-overlay"></div>
+    <div class="wrap" style="width:100%;">
+      <div class="hero-inner">
+
+        <div>
+          <div class="hero-eyebrow">Global Brand Scaling Agency</div>
+          <h1 class="hero-h1">
+            Engineering<br>
+            future growth<br>
+            for <span class="word-cycle" id="word-cycle"><span class="word-item">ambitious</span><span class="word-item">relentless</span><span class="word-item">dominant</span><span class="word-item">fearless</span><span class="word-item">unstoppable</span></span><br>
+            brands
+          </h1>
+          <p class="hero-sub">
+            We scale your social presence, amplify your voice, and drive real revenue — so you can focus on building the business.
+          </p>
+          <div class="hero-btns">
+            <a href="#contact" class="btn btn-dark">Book a free call</a>
+            <a href="#services" class="btn btn-outline">See what we do</a>
+          </div>
+        </div>
+
+        <!-- Orbiting rings visual -->
+        <div class="hero-visual">
+          <div class="orbit-wrap">
+            <div class="orbit-ring"><div class="orbit-dot"></div></div>
+            <div class="orbit-ring"><div class="orbit-dot"></div></div>
+            <div class="orbit-ring"><div class="orbit-dot"></div></div>
+            <div class="orbit-ring"><div class="orbit-dot"></div></div>
+            <div class="orbit-center">
+              <svg width="38" height="38" viewBox="0 0 24 24" fill="none"
+                   stroke="rgba(109,191,130,0.85)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 20 L8 12 L11 16 L14 8 L17 13 L19 10 L22 8"/>
+                <path d="M19 8 L22 8 L22 11"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ PAIN POINT ═══ -->
+  <hr class="divider">
+  <section class="pain">
+    <div class="wrap">
+      <h2 class="pain-h2 reveal">
+        Your brand is world-class.<br>
+        <span class="muted">Your social presence isn't.</span>
+      </h2>
+      <div class="pain-cols">
+
+        <div class="pain-col reveal">
+          <div class="pain-label">The problem</div>
+          <h3 class="pain-title">Inconsistent content, no clear strategy</h3>
+          <p class="pain-body">Most brands post sporadically with no narrative arc. Without a system, your audience never knows who you are or why they should care.</p>
+        </div>
+
+        <div class="pain-col featured reveal" style="transition-delay:0.1s;">
+          <div class="pain-label" style="color:rgba(255,255,255,0.5);">The opportunity</div>
+          <h3 class="pain-title" style="color:#fff;">Your competitors aren't doing this yet</h3>
+          <p class="pain-body" style="color:rgba(255,255,255,0.75);">The brands that win are the ones who show up consistently with a bold voice. That window is open right now — but it won't be for long.</p>
+        </div>
+
+        <div class="pain-col reveal" style="transition-delay:0.2s;">
+          <div class="pain-label">Our solution</div>
+          <h3 class="pain-title">Full-stack brand scaling, done for you</h3>
+          <p class="pain-body">Strategy, paid social advertising, ad creative, and influencer campaigns — all handled so your brand grows without pulling you from your core work.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+
+
+  <!-- ═══ DARK ORBIT ═══ -->
+  <section class="dark-orbit" id="about">
+    <div class="wrap">
+      <div class="dark-orbit-grid">
+
+        <div class="reveal">
+          <div class="dark-eyebrow">Our philosophy</div>
+          <h2 class="dark-h2">
+            Guiding your growth<br>
+            beyond <em>the algorithm</em>
+          </h2>
+          <p class="dark-body">
+            Great brand growth isn't about gaming the feed. It's about creating a gravitational pull — a voice, a presence, a story that draws your audience in and keeps them there. That's what we build for you.
+          </p>
+          <a href="#contact" class="btn btn-cream">Start scaling today</a>
+        </div>
+
+        <div class="dark-visual-col reveal" style="transition-delay:0.14s;">
+          <div class="rings-wrap">
+            <div class="d-ring"></div>
+            <div class="d-ring"></div>
+            <div class="d-ring"></div>
+            <div class="d-ring"></div>
+            <div class="d-ring"></div>
+            <div class="d-center">
+              <svg width="38" height="38" viewBox="0 0 24 24" fill="none"
+                   stroke="var(--ink)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 20 L8 12 L11 16 L14 8 L17 13 L19 10 L22 8"/>
+                <path d="M19 8 L22 8 L22 11"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ SERVICES + STATS ═══ -->
+  <section class="services-dark" id="services">
+    <canvas id="shader-canvas" aria-hidden="true"></canvas>
+    <div class="wrap">
+      <div class="svc-dark-grid">
+
+        <div class="reveal">
+          <h2 class="svc-dark-h2">
+            Founder-led<br>
+            brand <em>scaling</em><br>
+            that converts
+          </h2>
+          <p class="svc-dark-body">
+            We don't just grow follower counts. We build brand authority, generate inbound pipeline, and position you as the definitive voice in your market.
+          </p>
+          <a href="#contact" class="btn btn-cream">Book a strategy call</a>
+          <img src="Brand_Assets/Linework.png"
+               alt="" aria-hidden="true"
+               style="width:260px; margin-top:3em; opacity:0.12; filter:invert(1); display:block;">
+        </div>
+
+        <div class="svc-list reveal" style="transition-delay:0.14s;">
+          <div class="svc-row">
+            <div class="svc-row-tag">01 — Strategy</div>
+            <div class="svc-row-title">Brand Strategy & Identity</div>
+            <div class="svc-row-body">Visual language, market positioning, and messaging architecture that makes your brand impossible to ignore.</div>
+          </div>
+          <div class="svc-row">
+            <div class="svc-row-tag">02 — Creative</div>
+            <div class="svc-row-title">Ad Creative & Production</div>
+            <div class="svc-row-body">Scroll-stopping ad creatives built to perform on Facebook and Instagram — designed to stop the scroll and drive action.</div>
+          </div>
+          <div class="svc-row">
+            <div class="svc-row-tag">03 — Growth</div>
+            <div class="svc-row-title">Paid Social Advertising</div>
+            <div class="svc-row-body">Performance campaigns with precision targeting on Facebook and Instagram — every pound tracked, every conversion optimized.</div>
+          </div>
+          <div class="svc-row">
+            <div class="svc-row-tag">04 — Influence</div>
+            <div class="svc-row-title">Influencer & Creator Marketing</div>
+            <div class="svc-row-body">Vetted creator partnerships that authentically amplify your brand to exactly the audiences you need to reach.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ PROCESS ═══ -->
+  <hr class="divider">
+  <section class="process-sec" id="process">
+    <div class="wrap">
+      <div class="process-head reveal">
+        <h2 class="process-head-h2">How we scale your brand from day one</h2>
+      </div>
+      <div class="process-cols">
+        <div class="proc-col reveal">
+          <div class="proc-num">01</div>
+          <h3 class="proc-title">Discovery & Audit</h3>
+          <p class="proc-body">Deep-dive into your brand, audience, competitors, and current social performance. No guesswork — just data and clarity.</p>
+        </div>
+        <div class="proc-col reveal" style="transition-delay:0.1s;">
+          <div class="proc-num">02</div>
+          <h3 class="proc-title">Blueprint & Roadmap</h3>
+          <p class="proc-body">A bespoke growth plan tailored to your market and goals. Clear milestones, platform tactics, and a content calendar ready to execute.</p>
+        </div>
+        <div class="proc-col reveal" style="transition-delay:0.2s;">
+          <div class="proc-num">03</div>
+          <h3 class="proc-title">Launch in 48 Hours</h3>
+          <p class="proc-body">We move fast. Ad campaigns are live, creatives are running, and your brand is in front of the right audiences — all within two business days of kickoff.</p>
+        </div>
+        <div class="proc-col reveal" style="transition-delay:0.3s;">
+          <div class="proc-num">04</div>
+          <h3 class="proc-title">Optimize & Compound</h3>
+          <p class="proc-body">Weekly performance reviews, A/B testing, and quarterly strategy resets ensure your results compound month over month.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ CARDS ═══ -->
+  <section class="cards-sec">
+    <div class="wrap">
+      <div class="cards-head reveal">
+        <div class="cards-eyebrow">Full-service offering</div>
+        <h2 class="cards-h2">Everything your brand<br>needs to dominate</h2>
+      </div>
+      <div class="cards-grid">
+
+        <div class="card reveal">
+          <div class="card-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+          </div>
+          <h3 class="card-title">Brand Strategy</h3>
+          <p class="card-body">Positioning, visual identity, and messaging that give your brand a clear, compelling reason to exist.</p>
+        </div>
+
+        <div class="card reveal" style="transition-delay:0.07s;">
+          <div class="card-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>
+            </svg>
+          </div>
+          <h3 class="card-title">Ad Creative</h3>
+          <p class="card-body">High-converting ad creatives engineered for Facebook and Instagram performance — built to capture attention and drive action.</p>
+        </div>
+
+        <div class="card reveal" style="transition-delay:0.14s;">
+          <div class="card-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 10l4.553-2.07A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/>
+            </svg>
+          </div>
+          <h3 class="card-title">Content Production</h3>
+          <p class="card-body">Scroll-stopping ad creatives and copy engineered for Facebook and Instagram's algorithm.</p>
+        </div>
+
+        <div class="card reveal" style="transition-delay:0.21s;">
+          <div class="card-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/>
+            </svg>
+          </div>
+          <h3 class="card-title">Paid Advertising</h3>
+          <p class="card-body">Performance campaigns on Facebook and Instagram. Precision targeting, creative testing, maximum ROI.</p>
+        </div>
+
+        <div class="card reveal" style="transition-delay:0.28s;">
+          <div class="card-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+          </div>
+          <h3 class="card-title">Influencer Marketing</h3>
+          <p class="card-body">Strategic creator partnerships that put your brand in front of the right audiences through authentic channels.</p>
+        </div>
+
+        <div class="card reveal" style="transition-delay:0.35s;">
+          <div class="card-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <h3 class="card-title">Analytics & Intelligence</h3>
+          <p class="card-body">Deep performance reporting, competitive analysis, and data-backed optimization every single week.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ CTA BAND ═══ -->
+  <hr class="divider">
+  <section class="cta-band" id="contact">
+    <div class="wrap">
+      <div class="cta-band-row">
+
+        <!-- Left: heading -->
+        <div class="reveal">
+          <h2 class="cta-h2">
+            Ready to scale your brand?<br>
+            <em>Let's make it happen.</em>
+          </h2>
+          <p class="cta-sub">Tell us about your brand and what you're looking to achieve. We'll get back to you within 24 hours.</p>
+        </div>
+
+        <!-- Right: contact form -->
+        <form class="cta-form reveal" style="transition-delay:0.12s;"
+              action="mailto:andrewlancewebb@gmail.com"
+              method="POST" enctype="text/plain">
+
+          <div class="cta-form-row">
+            <div>
+              <label class="cta-label" for="cf-name">Full Name</label>
+              <input class="cta-input" type="text" id="cf-name" name="Name" placeholder="Jane Smith" required>
+            </div>
+            <div>
+              <label class="cta-label" for="cf-email">Email</label>
+              <input class="cta-input" type="email" id="cf-email" name="Email" placeholder="jane@brand.com" required>
+            </div>
+          </div>
+
+          <div>
+            <label class="cta-label" for="cf-brand">Brand / Company</label>
+            <input class="cta-input" type="text" id="cf-brand" name="Brand" placeholder="Your brand name">
+          </div>
+
+          <div>
+            <label class="cta-label" for="cf-message">Goals & Message</label>
+            <textarea class="cta-textarea" id="cf-message" name="Message" rows="4"
+                      placeholder="Tell us what you're trying to achieve…"></textarea>
+          </div>
+
+          <div>
+            <button type="submit" class="btn btn-dark" style="font-size:0.9rem; padding:0.8em 1.75em; border-radius:8px;">
+              Send Enquiry
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 8h10M9 4l4 4-4 4"/>
+              </svg>
+            </button>
+            <p class="cta-form-note">We reply within 24 hours.</p>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer>
+    <div class="f-blob"></div>
+    <div class="wrap">
+
+      <div class="footer-grid">
+        <div>
+          <div class="f-logo">
+            <svg width="24" height="24" viewBox="0 0 34 34" fill="none">
+              <circle cx="17" cy="17" r="15.5" stroke="rgba(246,245,242,0.55)" stroke-width="1.4"/>
+              <path d="M5 26 L10.5 17 L13.5 21 L17 13 L20.5 19 L23 16 L29 26"
+                    stroke="rgba(246,245,242,0.55)" stroke-width="1.3" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+              <path d="M6 24 L10 21.5 L13.5 22.5 L17 19 L21 17 L24 14 L28 11"
+                    stroke="rgba(246,245,242,0.85)" stroke-width="1.2" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+            </svg>
+            <span class="f-logo-text">Sierra Scaling</span>
+          </div>
+          <p class="f-tagline">Global brand scaling agency helping ambitious companies dominate their markets through paid social advertising and brand strategy.</p>
+          <a href="mailto:hello@sierrascaling.com" class="f-link" style="font-size:0.875rem;">hello@sierrascaling.com</a>
+        </div>
+
+        <div>
+          <h4 class="f-col-h">Services</h4>
+          <div class="f-links">
+            <a href="#" class="f-link">Brand Strategy</a>
+            <a href="#" class="f-link">Ad Creative</a>
+            <a href="#" class="f-link">Paid Advertising</a>
+            <a href="#" class="f-link">Influencer Marketing</a>
+            <a href="#" class="f-link">Analytics & Reporting</a>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="f-col-h">Company</h4>
+          <div class="f-links">
+            <a href="#" class="f-link">About Us</a>
+            <a href="#" class="f-link">Case Studies</a>
+            <a href="#" class="f-link">Blog</a>
+            <a href="#" class="f-link">Careers</a>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="f-col-h">Connect</h4>
+          <div class="f-links">
+            <a href="#" class="f-link">Instagram</a>
+            <a href="#" class="f-link">Facebook</a>
+            <a href="#" class="f-link">LinkedIn</a>
+            <a href="#" class="f-link">X / Twitter</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="f-copy">© 2025 Sierra Scaling. All rights reserved.</p>
+        <div class="f-legal">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+
+  <script>
+    // Scroll reveal
+    const els = document.querySelectorAll('.reveal');
+    const io  = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.07, rootMargin: '0px 0px -36px 0px' });
+    els.forEach(el => io.observe(el));
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const t = document.querySelector(a.getAttribute('href'));
+        if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+      });
+    });
+  </script>
+
+  <!-- ── Sonic Waveform Canvas ── -->
+  <script>
+    (function () {
+      const canvas = document.getElementById('waveform-canvas');
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      let raf;
+      let time = 0;
+      const mouse = { x: 0, y: 0 };
+
+      function resize() {
+        canvas.width  = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        mouse.x = canvas.width  / 2;
+        mouse.y = canvas.height / 2;
+        // Fill with cream so the first frame doesn't flash black
+        ctx.fillStyle = '#F6F5F2';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      function draw() {
+        // Trail fade in cream — creates the motion-blur smear
+        ctx.fillStyle = 'rgba(246, 245, 242, 0.18)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const lineCount    = 60;
+        const segmentCount = 80;
+        const midY         = canvas.height / 2;
+
+        for (let i = 0; i < lineCount; i++) {
+          const progress       = i / lineCount;
+          const colorIntensity = Math.sin(progress * Math.PI);
+
+          ctx.beginPath();
+          // Claude Blue: #4A6389 = rgb(74, 99, 137)
+          ctx.strokeStyle = `rgba(74, 99, 137, ${colorIntensity * 0.55})`;
+          ctx.lineWidth   = 1.4;
+
+          for (let j = 0; j <= segmentCount; j++) {
+            const x = (j / segmentCount) * canvas.width;
+
+            // Mouse influence: lines bulge toward the cursor
+            const dist        = Math.hypot(x - mouse.x, midY - mouse.y);
+            const mouseEffect = Math.max(0, 1 - dist / 380);
+
+            const noise = Math.sin(j * 0.1 + time + i * 0.2)       * 18;
+            const spike = Math.cos(j * 0.2 + time + i * 0.1)
+                        * Math.sin(j * 0.05 + time)                 * 48;
+            const y     = midY + noise + spike * (1 + mouseEffect * 2.2);
+
+            j === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        }
+
+        time += 0.02;
+        raf = requestAnimationFrame(draw);
+      }
+
+      function onMouseMove(e) {
+        // Offset relative to the canvas position
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+      }
+
+      // Boot
+      resize();
+      draw();
+
+      window.addEventListener('resize',    resize,      { passive: true });
+      window.addEventListener('mousemove', onMouseMove, { passive: true });
+
+      // Pause when tab is hidden to save CPU
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) { cancelAnimationFrame(raf); }
+        else { draw(); }
+      });
+    })();
+  </script>
+
+  <!-- ── Ring animation background (services section) ── -->
+  <script>
+    (function () {
+      const canvas  = document.getElementById('shader-canvas');
+      const section = document.getElementById('services');
+      if (!canvas || !section) return;
+
+      const ctx = canvas.getContext('2d');
+      let w = 0, h = 0, animId, t = 0;
+
+      function resize() {
+        w = canvas.width  = section.offsetWidth;
+        h = canvas.height = Math.max(section.offsetHeight, 400);
+      }
+
+      // Concentric rings in muted blue tones — same hue family as Claude Blue
+      const channels = [
+        [ 68,  92, 132], // Claude Blue (base)
+        [ 48,  66, 100], // deeper blue
+        [ 32,  48,  78], // dark navy
+      ];
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+
+        const cx   = w / 2;
+        const cy   = h / 2;
+        const unit = Math.min(w, h) / 2; // 1 UV unit in pixels
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'source-over'; // normal blending — no neon additive effect
+
+        for (let j = 0; j < 3; j++) {
+          const [r, g, b] = channels[j];
+
+          for (let i = 1; i <= 4; i++) {
+            // Mirror shader: fract(t - 0.01*j + 0.01*i) * 5.0  → ring radius in UV
+            const phase  = ((t - j * 0.01 + i * 0.01) % 1 + 1) % 1;
+            const radius = phase * 5.0 * unit;
+
+            // Weight grows with i² (like lineWidth * float(i*i) in shader)
+            const weight = i * i * 0.002 * unit; // pixels of glow width
+
+            // Fade alpha so new-born (tiny) rings don't pop
+            const edgeFade = Math.min(1, radius / (unit * 0.3));
+            const alpha    = Math.min(0.85, weight * 0.12) * edgeFade;
+
+            if (alpha < 0.008) continue;
+
+            // Wide soft aura
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(${r},${g},${b},${alpha * 0.22})`;
+            ctx.lineWidth   = weight * 12;
+            ctx.stroke();
+
+            // Sharp bright core with glow
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(${r},${g},${b},${alpha * 0.95})`;
+            ctx.lineWidth   = Math.max(1, weight * 0.9);
+            ctx.shadowBlur  = weight * 4;
+            ctx.shadowColor = `rgba(${r},${g},${b},1)`;
+            ctx.stroke();
+            ctx.shadowBlur  = 0;
+          }
+        }
+
+        ctx.restore();
+
+        t = (t + 0.0025) % 2;
+        animId = requestAnimationFrame(draw);
+      }
+
+      resize();
+      window.addEventListener('load',   resize, { once: true });
+      window.addEventListener('resize', resize, { passive: true });
+      draw();
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) cancelAnimationFrame(animId);
+        else draw();
+      });
+    })();
+  </script>
+
+  <!-- ── Animated word cycle (hero heading) ── -->
+  <script>
+    (function () {
+      const items = Array.from(document.querySelectorAll('.word-item'));
+      if (!items.length) return;
+
+      let idx = 0;
+      items[0].classList.add('wc-active');
+
+      setInterval(() => {
+        const prev = idx;
+        idx = (idx + 1) % items.length;
+
+        // Exit current word upward
+        items[prev].classList.remove('wc-active');
+        items[prev].classList.add('wc-exit');
+        setTimeout(() => items[prev].classList.remove('wc-exit'), 420);
+
+        // Enter next word from below
+        items[idx].classList.add('wc-active');
+      }, 2200);
+    })();
+  </script>
+
+</body>
+</html>
