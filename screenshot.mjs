@@ -15,10 +15,11 @@ const url   = process.argv[2] || 'http://localhost:3000';
 const label = process.argv[3] || '';
 
 const chromePaths = [
-  'C:/Users/User/.cache/puppeteer/chrome/win64-131.0.6778.108/chrome-win64/chrome.exe',
-  'C:/Users/nateh/.cache/puppeteer/chrome/win64-131.0.6778.108/chrome-win64/chrome.exe',
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
   'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
+  'C:/Users/User/.cache/puppeteer/chrome/win64-147.0.7727.57/chrome-win64/chrome.exe',
+  'C:/Users/User/.cache/puppeteer/chrome/win64-131.0.6778.108/chrome-win64/chrome.exe',
+  'C:/Users/nateh/.cache/puppeteer/chrome/win64-131.0.6778.108/chrome-win64/chrome.exe',
 ];
 const executablePath = chromePaths.find(p => fs.existsSync(p));
 
@@ -38,7 +39,7 @@ const browser = await puppeteer.launch({
 });
 const page = await browser.newPage();
 await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1.5 });
-await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
+await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 await new Promise(r => setTimeout(r, 1000));
 // Force scroll-reveal elements visible so full-page screenshots are accurate
 await page.evaluate(() => document.querySelectorAll('.reveal').forEach(el => el.classList.add('in')));
