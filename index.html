@@ -979,34 +979,37 @@
         </div>
 
         <!-- Right: contact form -->
-        <form class="cta-form reveal" style="transition-delay:0.12s;"
-              action="mailto:andrewlancewebb@gmail.com"
-              method="POST" enctype="text/plain">
+        <form id="cta-form" class="cta-form reveal" style="transition-delay:0.12s;">
+
+          <!-- Web3Forms — replace the value below with your key from web3forms.com -->
+          <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_KEY_HERE">
+          <!-- Honeypot spam trap -->
+          <input type="checkbox" name="botcheck" style="display:none;">
 
           <div class="cta-form-row">
             <div>
               <label class="cta-label" for="cf-name">Full Name</label>
-              <input class="cta-input" type="text" id="cf-name" name="Name" placeholder="Jane Smith" required>
+              <input class="cta-input" type="text" id="cf-name" name="name" placeholder="Jane Smith" autocomplete="name" required>
             </div>
             <div>
               <label class="cta-label" for="cf-email">Email</label>
-              <input class="cta-input" type="email" id="cf-email" name="Email" placeholder="jane@brand.com" required>
+              <input class="cta-input" type="email" id="cf-email" name="email" placeholder="jane@brand.com" autocomplete="email" required>
             </div>
           </div>
 
           <div>
             <label class="cta-label" for="cf-brand">Brand / Company</label>
-            <input class="cta-input" type="text" id="cf-brand" name="Brand" placeholder="Your brand name">
+            <input class="cta-input" type="text" id="cf-brand" name="brand" placeholder="Your brand name" autocomplete="organization">
           </div>
 
           <div>
             <label class="cta-label" for="cf-message">Goals & Message</label>
-            <textarea class="cta-textarea" id="cf-message" name="Message" rows="4"
+            <textarea class="cta-textarea" id="cf-message" name="message" rows="4"
                       placeholder="Tell us what you're trying to achieve…"></textarea>
           </div>
 
           <div>
-            <button type="submit" class="btn btn-dark" style="font-size:0.9rem; padding:0.8em 1.75em; border-radius:8px;">
+            <button type="submit" id="cta-submit" class="btn btn-dark" style="font-size:0.9rem; padding:0.8em 1.75em; border-radius:8px;">
               Send Enquiry
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 8h10M9 4l4 4-4 4"/>
@@ -1290,6 +1293,76 @@
         // Enter next word from below
         items[idx].classList.add('wc-active');
       }, 2200);
+    })();
+  </script>
+
+  <!-- ── Contact form handler ── -->
+  <script>
+    (function () {
+      const form = document.getElementById('cta-form');
+      if (!form) return;
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const name    = document.getElementById('cf-name').value.trim();
+        const email   = document.getElementById('cf-email').value.trim();
+        const brand   = document.getElementById('cf-brand').value.trim();
+        const message = document.getElementById('cf-message').value.trim();
+        const key     = form.querySelector('[name="access_key"]').value;
+
+        // Subject: "Name — Brand" or just "Name" if no brand given
+        const subject = brand ? `${name} — ${brand}` : name;
+
+        // Body: email address then message
+        const body = `Contact email: ${email}\n\n${message}`;
+
+        const btn = document.getElementById('cta-submit');
+        btn.disabled = true;
+        btn.style.opacity = '0.65';
+        btn.textContent = 'Sending…';
+
+        try {
+          const res  = await fetch('https://api.web3forms.com/submit', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body:    JSON.stringify({
+              access_key: key,
+              from_name:  'Sierra Scaling Website',
+              subject:    subject,
+              message:    body
+            })
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            form.innerHTML = `
+              <div style="padding:2.5em 0;">
+                <p style="font-size:1.05rem;font-weight:500;letter-spacing:-0.02em;margin-bottom:0.4em;">
+                  Message sent!
+                </p>
+                <p style="font-size:0.9rem;color:var(--ink-light);line-height:1.6;">
+                  Thanks ${name} — we'll be in touch within 24 hours.
+                </p>
+              </div>`;
+          } else {
+            throw new Error(json.message || 'failed');
+          }
+        } catch {
+          btn.disabled = false;
+          btn.style.opacity = '';
+          btn.innerHTML = 'Send Enquiry <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>';
+
+          let err = form.querySelector('.form-error');
+          if (!err) {
+            err = document.createElement('p');
+            err.className = 'form-error';
+            err.style.cssText = 'font-size:0.8rem;color:#c0392b;margin-top:0.5em;';
+            btn.parentNode.appendChild(err);
+          }
+          err.textContent = 'Something went wrong — please try again.';
+        }
+      });
     })();
   </script>
 
