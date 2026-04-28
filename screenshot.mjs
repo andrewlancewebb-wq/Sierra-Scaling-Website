@@ -42,8 +42,8 @@ await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1.5 });
 await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 await new Promise(r => setTimeout(r, 1000));
 // Force scroll-reveal elements visible so full-page screenshots are accurate
-await page.evaluate(() => document.querySelectorAll('.reveal').forEach(el => el.classList.add('in')));
-await new Promise(r => setTimeout(r, 400));
+await page.evaluate(() => document.querySelectorAll('.reveal, .card-float').forEach(el => el.classList.add('in')));
+await new Promise(r => setTimeout(r, 1200));
 await page.screenshot({ path: outputPath, fullPage: true });
 await browser.close();
 console.log(`Screenshot saved: ${filename}`);
